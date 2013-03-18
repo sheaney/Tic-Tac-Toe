@@ -1,6 +1,6 @@
 trait MaxMin
-case class Max() extends MaxMin
-case class Min() extends MaxMin
+object Max extends MaxMin
+object Min extends MaxMin
 
 object AI extends Utilities {
   type FitnessMove = Tuple2[Int, Option[Move]]
@@ -24,46 +24,31 @@ object AI extends Utilities {
   def min(x: FitnessMove, y: FitnessMove) = if (x._1 <= y._1) x else y
 
   def search(board: Board, player: Player): Move = {
-    def alphaBeta(node: Board, a: Int, b: Int, r: Option[Move], player: Player,
+    def alphaBeta(node: Board, alpha: Int, beta: Int, moveChoice: Option[Move], player: Player,
       p: MaxMin): FitnessMove = {
-      var alpha = a
-      var beta = b
-      var moveChoice = r
       if (terminal(node))
         (node.fitness, moveChoice)
       else
         p match {
-          case _: Max => {
+          case _: Max.type =>
             node.findPossibleMoves.
             takeWhile(_ => beta > alpha).
-            foreach { move =>
+            foldLeft((alpha, moveChoice)) { case ((alpha, moveChoice), move) =>
               val simulatedBoard = node.simulate(move, player)
-              val max1 =
-                max((alpha, moveChoice),
-                  alphaBeta(simulatedBoard, alpha, beta, Option(move), not(player), Min()))
-              alpha = max1._1
-              moveChoice = max1._2
+              max((alpha, moveChoice),
+                alphaBeta(simulatedBoard, alpha, beta, Option(move), not(player), Min))
             }
-            (alpha, moveChoice)
-          }
-
-          case _: Min => {
+          case _: Min.type =>
             node.findPossibleMoves.
             takeWhile(_ => beta > alpha).
-            foreach { move =>
+            foldLeft((beta, moveChoice)) { case ((beta, _), move) =>
               val simulatedBoard = node.simulate(move, player)
-              val min1 =
-                min((beta, moveChoice),
-                  alphaBeta(simulatedBoard, alpha, beta, moveChoice, not(player), Max()))
-              beta = min1._1
+              min((beta, moveChoice),
+                alphaBeta(simulatedBoard, alpha, beta, moveChoice, not(player), Max))
             }
-            (beta, moveChoice)
-          }
         }
-
     }
-
-    val (_, moveChoice) = alphaBeta(board, Integer.MIN_VALUE, Integer.MAX_VALUE, None, player, Max())
+    val (_, moveChoice) = alphaBeta(board, Integer.MIN_VALUE, Integer.MAX_VALUE, None, player, Max)
     moveChoice.get
   }
 
