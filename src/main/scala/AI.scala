@@ -30,7 +30,7 @@ object AI extends Utilities {
       var beta = b
       var moveChoice = r
       if (terminal(node))
-        (node.fitness2, moveChoice)
+        (node.fitness, moveChoice)
       else
         p match {
           case _: Max => {

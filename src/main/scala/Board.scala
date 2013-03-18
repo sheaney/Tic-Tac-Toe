@@ -1,10 +1,6 @@
 import annotation.switch
 
-class Board(val repr: Array[Array[Int]] = Array.fill(3,3)(0)) extends Utilities {
-  var p1FreeRows, p2FreeRows, p1FreeCols, p2FreeCols, p1FreeDiag, p2FreeDiag = 0
-  var i, j = 0
-  var free = true
-  var x, y = false
+class Board(private val repr: Array[Array[Int]] = Array.fill(3,3)(0)) extends Utilities {
 
   def update(player: Player) {
     var i, j = 0
@@ -33,123 +29,12 @@ class Board(val repr: Array[Array[Int]] = Array.fill(3,3)(0)) extends Utilities 
     } yield (i, j)
   }
 
-  def fitness2: Int = {
+  def fitness: Int = {
     checkForWinner match {
       case Some(_: Human) => -1
       case Some(_: Computer) => 1
       case _ => 0
     }
-  }
-
-  def fitness: Int = {
-    val (p1FreeRows, p2FreeRows) = freeRows
-    val (p1FreeCols, p2FreeCols) = freeCols
-    val (p1FreeDiag, p2FreeDiag) = freeDiag
-    (p2FreeRows + p2FreeCols + p2FreeDiag) -
-    (p1FreeRows + p1FreeCols + p1FreeDiag)
-  }
-
-  private def updateParams() {
-    if (repr(i)(j) != 0) {
-      free = false
-      if (repr(i)(j) == 1)
-        x = true
-      else
-        y = true
-    }
-  }
-
-  private def updateCounters(check: Int) {
-    (check: @switch) match {
-      case 1 =>
-        if (free) {
-          p1FreeRows += 1
-          p2FreeRows += 1
-        } else if (x && !y) {
-            p1FreeRows += 1
-        } else if (!x && y) {
-            p2FreeRows += 1
-        }
-      case 2 =>
-        if (free) {
-          p1FreeCols += 1
-          p2FreeCols += 1
-        } else if (x && !y) {
-            p1FreeCols += 1
-        } else if (!x && y) {
-            p2FreeCols += 1
-        }
-      case 3 =>
-        if (free) {
-          p1FreeDiag += 1
-          p2FreeDiag += 1
-        } else if (x && !y) {
-            p1FreeDiag += 1
-        } else if (!x && y) {
-            p2FreeDiag += 1
-        }
-    }
-  }
-
-  def freeRows: (Int, Int) = {
-    p1FreeRows = 0; p2FreeRows= 0
-    i = 0
-    while (i < 3) {
-      j = 0
-      free = true
-      x = false; y = false
-      while (j < 3) {
-        updateParams()
-        j += 1
-      }
-      updateCounters(1)
-      i += 1
-    }
-
-    (p1FreeRows, p2FreeRows)
-  }
-
-  def freeCols: (Int, Int) = {
-    p1FreeCols = 0; p2FreeCols = 0
-    j = 0
-    while (j < 3) {
-      i = 0
-      free = true
-      x = false; y = false
-      while (i < 3) {
-        updateParams()
-        i += 1
-      }
-      updateCounters(2)
-      j += 1
-    }
-
-    (p1FreeCols, p2FreeCols)
-  }
-
-  def freeDiag: (Int, Int) = {
-    p1FreeDiag = 0; p2FreeDiag = 0
-    i = 0; j = 0
-    free = true
-    x = false; y = false
-    while (i < 3) { // main diagonal
-      updateParams()
-      i += 1
-      j += 1
-    }
-    updateCounters(3)
-
-    i = 0; j = 2
-    free = true
-    x = false; y = false
-    while (i < 3) { // inverse diagonal
-      updateParams()
-      i += 1
-      j -= 1
-    }
-    updateCounters(3)
-
-    (p1FreeDiag, p2FreeDiag)
   }
 
   def getGameState: GameState = {
@@ -280,9 +165,4 @@ class Board(val repr: Array[Array[Int]] = Array.fill(3,3)(0)) extends Utilities 
   }
 }
 
-object GameBoard extends Board {
-  /*repr(0)(0) = 1
-  repr(1)(0) = 2
-  repr(1)(1) = 2
-  repr(1)(2) = 1*/
-}
+object GameBoard extends Board
