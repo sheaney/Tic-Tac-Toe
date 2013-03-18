@@ -4,22 +4,17 @@ case class Winner() extends GameState
 case class Tied() extends GameState
 
 object Game extends Utilities {
+
+  type Players = Tuple2[Player, Player]
+
   def main(args: Array[String]) {
     (initialize andThen run)(args)
   }
 
-  def initialize = (args: Array[String]) => (new Human, new Computer)
+  def initialize = (args: Array[String]) => { GUI.start; (new Human, new Computer) }
 
   def run(players: Players) {
-    gameLoop(players._1, players, Running()) match {
-      case Some(_: Human) =>
-        println("You won!")
-      case Some(_: Computer) =>
-        println("Better luck next time!")
-      case _ =>
-        println("You tied")
-    }
-    GameBoard.printBoard
+    GUI.setWinner(gameLoop(players._1, players, Running()))
   }
 
   def gameLoop(player: Player, players: Players, gameState: GameState): Option[Player] =
@@ -34,6 +29,7 @@ object Game extends Utilities {
     }
 
   def nextTurn(player: Player) {
+    GUI.update(player)
     GameBoard.update(player)
   }
 

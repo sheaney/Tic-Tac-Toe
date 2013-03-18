@@ -7,14 +7,11 @@ class Board(val repr: Array[Array[Int]] = Array.fill(3,3)(0)) extends Utilities 
   var x, y = false
 
   def update(player: Player) {
-    printBoard
     var i, j = 0
-    val move = player.getMove
-    i = move._1
-    j = move._2
+    val (row, column) = player.getMove
     player match {
-      case _: Human => repr(i)(j) = 1
-      case _: Computer => repr(i)(j) = 2
+      case _: Human => repr(row)(column) = 1
+      case _: Computer => repr(row)(column) = 2
     }
   }
 
@@ -253,6 +250,8 @@ class Board(val repr: Array[Array[Int]] = Array.fill(3,3)(0)) extends Utilities 
       case 1 => return Some(new Human())
       case 2 => return Some(new Computer())
     }
+
+  def getPlayer(i: Int, j: Int): Int = this.repr(i)(j)
 
   def printBoard: Unit = println(this)
 

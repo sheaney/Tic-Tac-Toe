@@ -3,18 +3,9 @@ trait Player extends Utilities {
 }
 
 class Human extends Player {
-  def getMove: Move = {
-    println("Enter i: ")
-    val i = readInt
-    println("Enter j: ")
-    val j = readInt
-    (i, j)
-  }
+  def getMove: Move = GUI.awaitMoveSelection
 }
 
 class Computer extends Player {
-  val r = scala.util.Random
-  def getMove: Move = {
-    AI.search(GameBoard.copy, this)
-  }
+  def getMove: Move = AI.search(GameBoard.copy, this)
 }

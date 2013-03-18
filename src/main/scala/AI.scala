@@ -4,7 +4,6 @@ case class Min() extends MaxMin
 
 object AI extends Utilities {
   type FitnessMove = Tuple2[Int, Option[Move]]
-  //type FitnessMove = Tuple2[Int, List[Move]]
   val player1 = new Human
   val player2 = new Computer
 
@@ -64,8 +63,7 @@ object AI extends Utilities {
 
     }
 
-    val (f, moveChoice) = alphaBeta(board, Integer.MIN_VALUE, Integer.MAX_VALUE, None, player, Max())
-    println(moveChoice.head)
+    val (_, moveChoice) = alphaBeta(board, Integer.MIN_VALUE, Integer.MAX_VALUE, None, player, Max())
     moveChoice.get
   }
 
