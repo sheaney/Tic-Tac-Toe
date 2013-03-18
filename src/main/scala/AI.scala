@@ -3,7 +3,8 @@ case class Max() extends MaxMin
 case class Min() extends MaxMin
 
 object AI extends Utilities {
-  type FitnessMove = Tuple2[Int, List[Move]]
+  type FitnessMove = Tuple2[Int, Option[Move]]
+  //type FitnessMove = Tuple2[Int, List[Move]]
   val player1 = new Human
   val player2 = new Computer
 
@@ -24,40 +25,48 @@ object AI extends Utilities {
   def min(x: FitnessMove, y: FitnessMove) = if (x._1 <= y._1) x else y
 
   def search(board: Board, player: Player): Move = {
-
-    def alphaBeta(node: Board, alpha: Int, beta: Int, moveChoice: List[Move], player: Player,
+    def alphaBeta(node: Board, a: Int, b: Int, r: Option[Move], player: Player,
       p: MaxMin): FitnessMove = {
-      if (terminal(node)) {
-        //println(f"Fitness: ${node.fitness} \n $node")
-        (node.fitness, moveChoice)
-      }
+      var alpha = a
+      var beta = b
+      var moveChoice = r
+      if (terminal(node))
+        (node.fitness2, moveChoice)
       else
         p match {
-          case _: Max =>
+          case _: Max => {
             node.findPossibleMoves.
-            //takeWhile(_ => beta > alpha).
-            foldLeft((alpha, moveChoice)) { case ((alpha, moveChoice), move) =>
+            takeWhile(_ => beta > alpha).
+            foreach { move =>
               val simulatedBoard = node.simulate(move, player)
-              max((alpha, moveChoice),
-                alphaBeta(simulatedBoard, alpha, beta, move :: moveChoice, not(player), Min()))
+              val max1 =
+                max((alpha, moveChoice),
+                  alphaBeta(simulatedBoard, alpha, beta, Option(move), not(player), Min()))
+              alpha = max1._1
+              moveChoice = max1._2
             }
+            (alpha, moveChoice)
+          }
 
-          case _: Min =>
+          case _: Min => {
             node.findPossibleMoves.
-            //takeWhile(_ => beta > alpha).
-            foldLeft((alpha, moveChoice)) { case ((alpha, moveChoice), move) =>
+            takeWhile(_ => beta > alpha).
+            foreach { move =>
               val simulatedBoard = node.simulate(move, player)
-              (
-              min((beta, moveChoice),
-                alphaBeta(simulatedBoard, alpha, beta, moveChoice, not(player), Min()))._1,
-              moveChoice
-              )
+              val min1 =
+                min((beta, moveChoice),
+                  alphaBeta(simulatedBoard, alpha, beta, moveChoice, not(player), Max()))
+              beta = min1._1
             }
+            (beta, moveChoice)
+          }
         }
+
     }
-    val (f, moveChoice) = alphaBeta(board, Integer.MIN_VALUE, Integer.MAX_VALUE, List.empty[Move], player, Max())
-    println(s"Chosen fitness: $f")
-    moveChoice.head
+
+    val (f, moveChoice) = alphaBeta(board, Integer.MIN_VALUE, Integer.MAX_VALUE, None, player, Max())
+    println(moveChoice.head)
+    moveChoice.get
   }
 
 }

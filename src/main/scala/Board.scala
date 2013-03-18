@@ -281,4 +281,9 @@ class Board(val repr: Array[Array[Int]] = Array.fill(3,3)(0)) extends Utilities 
   }
 }
 
-object GameBoard extends Board
+object GameBoard extends Board {
+  /*repr(0)(0) = 1
+  repr(1)(0) = 2
+  repr(1)(1) = 2
+  repr(1)(2) = 1*/
+}
