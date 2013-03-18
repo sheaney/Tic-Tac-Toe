@@ -5,8 +5,8 @@ import javax.swing.{ImageIcon, SwingUtilities}
 
 object GUI {
 
-  private val whiteDisk = new Label { icon = new ImageIcon("images/white.gif") }
-  private val blackDisk = new Label { icon = new ImageIcon("images/black.gif") }
+  private val x = new Label { icon = new ImageIcon("images/X.jpg") }
+  private val o = new Label { icon = new ImageIcon("images/O.jpg") }
   private val empty = new Label("")
 
   private val table = new Table(3, 3) {
@@ -30,6 +30,7 @@ object GUI {
     title = "Tic Tac Toe"
     location = new Point(200, 200)
     resizable = false
+    message.horizontalTextPosition = Alignment.Center
     contents = new BoxPanel(Orientation.Vertical) {
       contents += message
       contents += table
@@ -37,8 +38,8 @@ object GUI {
   }
 
   private def renderCell(row: Int, column: Int): Component = GameBoard.getPlayer(row, column) match {
-    case 1 => blackDisk
-    case 2 => whiteDisk
+    case 1 => x
+    case 2 => o
     case _ => empty
   }
 
