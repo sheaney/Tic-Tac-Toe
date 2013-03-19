@@ -3,7 +3,6 @@ import annotation.switch
 class Board(private val repr: Array[Array[Int]] = Array.fill(3,3)(0)) extends Utilities {
 
   def update(player: Player) {
-    var i, j = 0
     val (row, column) = player.getMove
     player match {
       case _: Human => repr(row)(column) = 1
@@ -13,42 +12,38 @@ class Board(private val repr: Array[Array[Int]] = Array.fill(3,3)(0)) extends Ut
 
   def simulate(move: Move, player: Player): Board = {
     val board = this.copy
-    var (i, j) = move
+    val (row, column) = move
     player match {
-      case _: Human => board.repr(i)(j) = 1
-      case _: Computer => board.repr(i)(j) = 2
+      case _: Human => board.repr(row)(column) = 1
+      case _: Computer => board.repr(row)(column) = 2
     }
     board
   }
 
-  def findPossibleMoves: Stream[Move] = {
+  def findPossibleMoves: Stream[Move] =
     for {
-      i <- (0 to 2).toStream
-      j <- (0 to 2).toStream
-      if repr(i)(j) == 0
-    } yield (i, j)
-  }
+      row <- (0 to 2).toStream
+      column <- (0 to 2).toStream
+      if repr(row)(column) == 0
+    } yield (row, column)
 
-  def fitness: Int = {
+  def fitness: Int =
     checkForWinner match {
       case Some(_: Human) => -1
       case Some(_: Computer) => 1
       case _ => 0
     }
-  }
 
-  def getGameState: GameState = {
+  def getGameState: GameState =
     if (checkForWinner.isEmpty)
       checkIfBoardIsFull
     else
       Winner()
-  }
 
-  def checkForWinner: Option[Player] = {
+  def checkForWinner: Option[Player] =
     checkForVerticalWinner
       .orElse(checkForHorizontalWinner)
       .orElse(checkForDiagonalWinner)
-  }
 
   def checkForVerticalWinner: Option[Player] = {
     var j = 0
@@ -66,7 +61,7 @@ class Board(private val repr: Array[Array[Int]] = Array.fill(3,3)(0)) extends Ut
       }
       j += 1
     }
-    return None
+    None
   }
 
   def checkForHorizontalWinner: Option[Player] = {
@@ -85,7 +80,7 @@ class Board(private val repr: Array[Array[Int]] = Array.fill(3,3)(0)) extends Ut
       }
       i += 1
     }
-    return None
+    None
   }
 
   def checkForDiagonalWinner: Option[Player] = {
@@ -113,7 +108,7 @@ class Board(private val repr: Array[Array[Int]] = Array.fill(3,3)(0)) extends Ut
     if (winner) {
       return getWinner(check2)
     }
-    return None
+    None
   }
 
   def checkIfBoardIsFull: GameState = {
@@ -127,7 +122,7 @@ class Board(private val repr: Array[Array[Int]] = Array.fill(3,3)(0)) extends Ut
       }
       i += 1
     }
-    return Tied()
+    Tied()
   }
 
   private def getWinner(winner: Int): Option[Player] =
@@ -146,7 +141,7 @@ class Board(private val repr: Array[Array[Int]] = Array.fill(3,3)(0)) extends Ut
 
 	private def strBoard: String = {
     def makeRow(row: Array[Int]): String = {
-      val disksInRow = 
+      val marksInRow =
         for (cell <- row) yield {
           cell match {
             case 0 => " - "
@@ -154,7 +149,7 @@ class Board(private val repr: Array[Array[Int]] = Array.fill(3,3)(0)) extends Ut
             case 2 => " O "
           }
         }
-      disksInRow.mkString 
+      marksInRow.mkString 
     }
 
     val upperRow = (0 until repr.length).toList mkString ("   ", "  ", "\n")
