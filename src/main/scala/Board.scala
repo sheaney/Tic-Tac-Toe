@@ -1,6 +1,6 @@
 import annotation.switch
 
-class Board(private val repr: Array[Array[Int]] = Array.fill(3,3)(0)) extends Utilities {
+class Board(protected val repr: Array[Array[Int]] = Array.fill(3,3)(0)) extends Utilities {
 
   def update(player: Player) {
     val (row, column) = player.getMove
