@@ -35,7 +35,7 @@ object AI extends Utilities {
         p match {
           case _: Max.type => {
             node.findPossibleMoves.
-            //takeWhile(_ => beta > alpha).
+            takeWhile(_ => beta > alpha).
             foreach { move =>
               val simulatedBoard = node.simulate(move, player)
               val max1 =
@@ -49,7 +49,7 @@ object AI extends Utilities {
 
           case _: Min.type => {
             node.findPossibleMoves.
-            //takeWhile(_ => beta > alpha).
+            takeWhile(_ => beta > alpha).
             foreach { move =>
               val simulatedBoard = node.simulate(move, player)
               val min1 = 
@@ -59,31 +59,6 @@ object AI extends Utilities {
             }
             (beta, moveChoice)
           }
-        }
-    }
-
-    def alphaBeta2(node: Board, alpha: Int, beta: Int, moveChoice: Option[Move], player: Player,
-      p: MaxMin): FitnessMove = {
-      if (terminal(node))
-        (node.fitness, moveChoice)
-      else
-        p match {
-          case _: Max.type =>
-            node.findPossibleMoves.
-            //takeWhile(_ => beta > alpha).
-            foldLeft((alpha, moveChoice)) { case ((alpha, moveChoice), move) =>
-              val simulatedBoard = node.simulate(move, player)
-              max((alpha, moveChoice),
-                alphaBeta(simulatedBoard, alpha, beta, Option(move), not(player), Min))
-            }
-          case _: Min.type =>
-            node.findPossibleMoves.
-            //takeWhile(_ => beta > alpha).
-            foldLeft((beta, moveChoice)) { case ((beta, _), move) =>
-              val simulatedBoard = node.simulate(move, player)
-              min((beta, moveChoice),
-                alphaBeta(simulatedBoard, alpha, beta, moveChoice, not(player), Max))
-            }
         }
     }
     val (_, moveChoice) = alphaBeta(board, Integer.MIN_VALUE, Integer.MAX_VALUE, None, player, Max)
