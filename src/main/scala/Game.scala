@@ -1,7 +1,9 @@
-trait GameState
+sealed abstract class GameState
 case class Running() extends GameState
-case class Winner() extends GameState
-case class Tied() extends GameState
+
+abstract class GameOver() extends GameState
+case class Winner() extends GameOver
+case class Tied() extends GameOver
 
 object Game extends Utilities {
 
@@ -22,10 +24,8 @@ object Game extends Utilities {
       case _: Running =>
         nextTurn(player)
         gameLoop(nextPlayer(player, players), players, GameBoard.getGameState)
-      case _: Winner =>
+      case _: GameOver =>
         GameBoard.checkForWinner
-      case _: Tied =>
-        None
     }
 
   def nextTurn(player: Player) {
