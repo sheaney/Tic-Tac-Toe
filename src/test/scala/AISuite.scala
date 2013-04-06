@@ -15,7 +15,6 @@ class AISuite extends FunSuite with BeforeAndAfter {
     repr(0)(1) = 1
     repr(0)(2) = 1
     repr(1)(1) = 2
-    repr(1)(2) = 2
     val board = new Board(repr)
     assert(AI.search(board, new Computer) === (0, 0))
   }
