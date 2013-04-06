@@ -15,3 +15,9 @@ Change into main directory and run:
 1. ```sbt reload update```
 2. ```sbt compile```
 3. ```sbt run```
+
+## Testing
+
+Run tests from main directory:
+
+```sbt test```
