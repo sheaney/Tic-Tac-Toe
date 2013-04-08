@@ -19,7 +19,7 @@ object AI extends Utilities {
   }
 
   def max(x: FitnessMove, y: FitnessMove) = if (x._1 >= y._1) x else y
-  def min(x: FitnessMove, y: FitnessMove) = if (x._1 <= y._1) x else y
+  def min(x: FitnessMove, y: FitnessMove) = if (x._1 <= y._1) x else (y._1, x._2)
 
   def search(board: Board, player: Player, players: Players): Move = {
     def alphaBeta(node: Board, alpha: Int, beta: Int, moveChoice: Option[Move], player: Player,
@@ -42,11 +42,8 @@ object AI extends Utilities {
             takeWhile(_ => beta > alpha).
             foldLeft((beta, moveChoice)) { case ((beta, _), move) =>
               val simulatedBoard = node.simulate(move, player)
-              (
-                min((beta, moveChoice),
-                  alphaBeta(simulatedBoard, alpha, beta, moveChoice, not(player, players), Max))._1,
-                moveChoice
-              )
+              min((beta, moveChoice),
+                alphaBeta(simulatedBoard, alpha, beta, moveChoice, not(player, players), Max))
             }
         }
     }
