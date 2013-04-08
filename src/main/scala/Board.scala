@@ -2,11 +2,11 @@ import annotation.switch
 
 class Board(protected val repr: Array[Array[Int]] = Array.fill(3,3)(0)) extends Utilities {
 
-  def update(player: Player) {
-    val (row, column) = player.getMove
+  def update(player: Player, players: Players) {
+    val (row, column) = player.getMove(players)
     player match {
-      case _: Human => repr(row)(column) = 1
-      case _: Computer => repr(row)(column) = 2
+      case _: Player1 => repr(row)(column) = 1
+      case _: Player2 => repr(row)(column) = 2
     }
   }
 
@@ -14,8 +14,8 @@ class Board(protected val repr: Array[Array[Int]] = Array.fill(3,3)(0)) extends 
     val board = this.copy
     val (row, column) = move
     player match {
-      case _: Human => board.repr(row)(column) = 1
-      case _: Computer => board.repr(row)(column) = 2
+      case _: Player1 => board.repr(row)(column) = 1
+      case _: Player2 => board.repr(row)(column) = 2
     }
     board
   }
@@ -27,25 +27,25 @@ class Board(protected val repr: Array[Array[Int]] = Array.fill(3,3)(0)) extends 
       if repr(row)(column) == 0
     } yield (row, column)
 
-  def fitness: Int =
-    checkForWinner match {
+  def fitness(players: Players): Int =
+    checkForWinner(players) match {
       case Some(_: Human) => -1
       case Some(_: Computer) => 1
       case _ => 0
     }
 
-  def getGameState: GameState =
-    if (checkForWinner.isEmpty)
+  def getGameState(players: Players): GameState =
+    if (checkForWinner(players).isEmpty)
       checkIfBoardIsFull
     else
       Winner()
 
-  def checkForWinner: Option[Player] =
-    checkForVerticalWinner
-      .orElse(checkForHorizontalWinner)
-      .orElse(checkForDiagonalWinner)
+  def checkForWinner(players: Players): Option[Player] =
+    checkForVerticalWinner(players)
+      .orElse(checkForHorizontalWinner(players))
+      .orElse(checkForDiagonalWinner(players))
 
-  def checkForVerticalWinner: Option[Player] = {
+  def checkForVerticalWinner(players: Players): Option[Player] = {
     var j = 0
     while (j < 3) {
       var i = 0
@@ -57,14 +57,14 @@ class Board(protected val repr: Array[Array[Int]] = Array.fill(3,3)(0)) extends 
         i += 1
       }
       if (winner) {
-        return getWinner(check)
+        return getWinner(check, players)
       }
       j += 1
     }
     None
   }
 
-  def checkForHorizontalWinner: Option[Player] = {
+  def checkForHorizontalWinner(players: Players): Option[Player] = {
     var i = 0
     while (i < 3) {
       var j = 0
@@ -76,14 +76,14 @@ class Board(protected val repr: Array[Array[Int]] = Array.fill(3,3)(0)) extends 
         j += 1
       }
       if (winner) {
-        return getWinner(check)
+        return getWinner(check, players)
       }
       i += 1
     }
     None
   }
 
-  def checkForDiagonalWinner: Option[Player] = {
+  def checkForDiagonalWinner(players: Players): Option[Player] = {
     var i = 0
     val check = repr(i)(i)
     var winner = true
@@ -93,7 +93,7 @@ class Board(protected val repr: Array[Array[Int]] = Array.fill(3,3)(0)) extends 
       i += 1
     }
     if (winner) {
-      return getWinner(check)
+      return getWinner(check, players)
     }
     i = 0
     var j = 2
@@ -106,7 +106,7 @@ class Board(protected val repr: Array[Array[Int]] = Array.fill(3,3)(0)) extends 
       j -= 1
     }
     if (winner) {
-      return getWinner(check2)
+      return getWinner(check2, players)
     }
     None
   }
@@ -125,10 +125,10 @@ class Board(protected val repr: Array[Array[Int]] = Array.fill(3,3)(0)) extends 
     Tied()
   }
 
-  private def getWinner(winner: Int): Option[Player] =
+  private def getWinner(winner: Int, players: Players): Option[Player] =
     (winner: @switch) match {
-      case 1 => return Some(new Human())
-      case 2 => return Some(new Computer())
+      case 1 => Some(players._1)
+      case 2 => Some(players._2)
     }
 
   def getPlayer(i: Int, j: Int): Int = this.repr(i)(j)

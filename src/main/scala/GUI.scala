@@ -24,7 +24,7 @@ object GUI {
     }
   }
 
-  private val message = new Label("Your move")
+  private val message = new Label("X's move")
 
   private val mainFrame = new MainFrame {
     title = "Tic Tac Toe"
@@ -58,10 +58,10 @@ object GUI {
   def setWinner(player: Option[Player]) {
     table.repaint
     player match {
-      case Some(_: Human) =>
-        message.text = "You won!"
-      case Some(_: Computer) =>
-        message.text = "Better luck next time..."
+      case Some(_: Player1) =>
+        message.text = "X's won!"
+      case Some(_: Player2) =>
+        message.text = "O's won!"
       case _ =>
         message.text = "It's a tie!"
     }
@@ -70,10 +70,10 @@ object GUI {
   def update(player: Player) {
     table.repaint
     player match {
-      case _: Human =>
-        message.text = "Your move"
-      case _: Computer =>
-        message.text = "CPU is thinking"
+      case _: Player1 =>
+        message.text = "X's move"
+      case _: Player2 =>
+        message.text = "O's move"
     }
   }
 
