@@ -14,7 +14,7 @@ Change into main directory and run:
 
 1. ```sbt reload update```
 2. ```sbt compile```
-3. ```sbt run```
+3. ```sbt run X``` to play as X's or ```sbt run O``` to play as O's
 
 ## Testing
 

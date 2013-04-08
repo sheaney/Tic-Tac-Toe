@@ -13,10 +13,10 @@ object Game extends Utilities {
 
   def initialize = (args: Array[String]) => {
       GUI.start
-      args.map(_.trim) match {
-        case Array("1") =>
+      args.map(_.trim.toLowerCase) match {
+        case Array("x") =>
           (new Player1 with Human, new Player2 with Computer)
-        case Array("2") =>
+        case Array("o") =>
           (new Player1 with Computer, new Player2 with Human)
         case _ =>
           (new Player1 with Human, new Player2 with Computer)
