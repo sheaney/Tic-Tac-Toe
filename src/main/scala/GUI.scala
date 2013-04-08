@@ -3,7 +3,7 @@ import scala.swing._
 import java.awt.{Dimension, Color}
 import javax.swing.{ImageIcon, SwingUtilities}
 
-object GUI {
+object GUI extends Utilities {
 
   private val x = new Label { icon = new ImageIcon("images/X.jpg") }
   private val o = new Label { icon = new ImageIcon("images/O.jpg") }
@@ -79,7 +79,7 @@ object GUI {
 
   private var selection = (-1 -> -1)
 
-  def awaitMoveSelection: (Int, Int) = {
+  def awaitMoveSelection: Move = {
     refreshSelection()
     while (!hasChosenMove || !legalSelection) {
       Thread.sleep(500)
