@@ -1,6 +1,6 @@
 import annotation.switch
 
-class Board(protected val repr: Array[Array[Int]] = Array.fill(3,3)(0)) extends Utilities {
+class Board(private val repr: Array[Array[Int]] = Array.fill(3,3)(0)) extends Utilities {
 
   def update(player: Player, players: Players) {
     val (row, column) = player.getMove(players)
@@ -28,105 +28,81 @@ class Board(protected val repr: Array[Array[Int]] = Array.fill(3,3)(0)) extends 
     } yield (row, column)
 
   def fitness(players: Players): Int =
-    checkForWinner(players) match {
+    getWinner(players) match {
       case Some(_: Human) => -1
       case Some(_: Computer) => 1
       case _ => 0
     }
 
   def getGameState(players: Players): GameState =
-    if (checkForWinner(players).isEmpty)
+    if (getWinner(players).isEmpty)
       checkIfBoardIsFull
     else
       Winner()
 
-  def checkForWinner(players: Players): Option[Player] =
-    checkForVerticalWinner(players)
-      .orElse(checkForHorizontalWinner(players))
-      .orElse(checkForDiagonalWinner(players))
+  def getWinner(players: Players): Option[Player] =
+    getVerticalWinner(players)
+      .orElse(getHorizontalWinner(players))
+      .orElse(getDiagonalWinner(players))
 
-  def checkForVerticalWinner(players: Players): Option[Player] = {
-    var j = 0
-    while (j < 3) {
-      var i = 0
-      var winner = true
-      val check = repr(i)(j)
-      while (i < 3) {
-        if (repr(i)(j) == 0 || check != repr(i)(j))
-          winner = false
-        i += 1
+  def getVerticalWinner(players: Players): Option[Player] = {
+    val indeces = Seq(0, 1, 2)
+    def checkColumn(col: Int): Boolean = {
+      val check = repr(indeces.head)(col)
+      indeces.forall { row =>
+        repr(row)(col) == check
       }
-      if (winner) {
-        return getWinner(check, players)
-      }
-      j += 1
     }
-    None
+
+    getWinner(
+      indeces.foldLeft(0) { (winner, col) =>
+        if (winner != 0) winner
+        else if (checkColumn(col)) repr(col)(col)
+        else 0
+      },
+      players
+    )
   }
 
-  def checkForHorizontalWinner(players: Players): Option[Player] = {
-    var i = 0
-    while (i < 3) {
-      var j = 0
-      var winner = true
-      val check = repr(i)(j)
-      while (j < 3) {
-        if (repr(i)(j) == 0 || check != repr(i)(j))
-          winner = false
-        j += 1
-      }
-      if (winner) {
-        return getWinner(check, players)
-      }
-      i += 1
-    }
-    None
+  def getHorizontalWinner(players: Players): Option[Player] =
+    getWinner(
+      repr.foldLeft(0) { (winner, row) =>
+        if (winner != 0) winner
+        else if (row.forall(_ == row.head)) row.head
+        else 0
+      },
+      players
+    )
+
+  def getDiagonalWinner(players: Players): Option[Player] = {
+    val indeces = List(0, 1, 2)
+    if (regularDiagonal(indeces))
+      getWinner(repr(indeces.head)(indeces.head), players)
+    else if (reverseDiagonal(indeces))
+      getWinner(repr(1)(1), players)
+    else
+      getWinner(0, players)
   }
 
-  def checkForDiagonalWinner(players: Players): Option[Player] = {
-    var i = 0
-    val check = repr(i)(i)
-    var winner = true
-    while (i < 3) { // main diagonal
-      if (repr(i)(i) == 0 || check != repr(i)(i))
-        winner = false
-      i += 1
+  private def regularDiagonal(indeces: Seq[Int]): Boolean =
+    indeces.forall(index => repr(index)(index) == repr(indeces.head)(indeces.head))
+
+  private def reverseDiagonal(indeces: Seq[Int]): Boolean =
+    indeces.reverse.zip(indeces) forall { case (row, col) =>
+      repr(row)(col) == repr(1)(1)
     }
-    if (winner) {
-      return getWinner(check, players)
-    }
-    i = 0
-    var j = 2
-    val check2 = repr(i)(j)
-    winner = true
-    while (i < 3) { // inverse diagonal
-      if (repr(i)(j) == 0 || check2 != repr(i)(j))
-        winner = false
-      i += 1
-      j -= 1
-    }
-    if (winner) {
-      return getWinner(check2, players)
-    }
-    None
-  }
 
   def checkIfBoardIsFull: GameState = {
-    var i = 0
-    while (i < 3) {
-      var j = 0
-      while (j < 3) {
-        if (repr(i)(j) == 0) 
-          return Running()
-        j += 1
+    def isFull: Boolean =
+      repr.foldLeft(true) { (isFull, row) =>
+        isFull && row.forall(_ != 0)
       }
-      i += 1
-    }
-    Tied()
+    if (isFull) Tied() else Running()
   }
 
   private def getWinner(winner: Int, players: Players): Option[Player] =
     (winner: @switch) match {
+      case 0 => None
       case 1 => Some(players._1)
       case 2 => Some(players._2)
     }

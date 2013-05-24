@@ -6,7 +6,7 @@ object AI extends Utilities {
   type FitnessMove = Tuple2[Int, Option[Move]]
 
   def terminal(node: Board, players: Players) =
-    if (!node.checkForWinner(players).isEmpty) true
+    if (!node.getWinner(players).isEmpty) true
     else
       node.checkIfBoardIsFull match {
         case _: Running => false
@@ -23,7 +23,7 @@ object AI extends Utilities {
 
   def search(board: Board, player: Player, players: Players): Move = {
     def alphaBeta(node: Board, alpha: Int, beta: Int, moveChoice: Option[Move], player: Player,
-      p: MaxMin): FitnessMove = {
+        p: MaxMin): FitnessMove =
       if (terminal(node, players))
         (node.fitness(players), moveChoice)
       else
@@ -46,7 +46,6 @@ object AI extends Utilities {
                 alphaBeta(simulatedBoard, alpha, beta, moveChoice, not(player, players), Max))
             }
         }
-    }
     val (_, moveChoice) = alphaBeta(board, Integer.MIN_VALUE, Integer.MAX_VALUE, None, player, Max)
     moveChoice.get
   }

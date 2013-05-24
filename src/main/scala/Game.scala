@@ -33,7 +33,7 @@ object Game extends Utilities {
         nextTurn(player, players)
         gameLoop(nextPlayer(player, players), players, GameBoard.getGameState(players))
       case _: GameOver =>
-        GameBoard.checkForWinner(players)
+        GameBoard.getWinner(players)
     }
 
   def nextTurn(player: Player, players: Players) {
