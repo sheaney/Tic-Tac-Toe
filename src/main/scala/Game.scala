@@ -11,7 +11,7 @@ object Game extends Utilities {
     (initialize andThen run)(args)
   }
 
-  def initialize = (args: Array[String]) => {
+  lazy val initialize = (args: Array[String]) => {
       GUI.start
       args.map(_.trim.toLowerCase) match {
         case Array("x") =>
@@ -24,24 +24,24 @@ object Game extends Utilities {
     }
 
   def run(players: Players) {
-    GUI.setWinner(gameLoop(players._1, players, Running))
+    GUI.setWinner(gameLoop(players._1, Running)(players))
   }
 
-  def gameLoop(player: Player, players: Players, gameState: GameState): Option[Player] =
+  def gameLoop(player: Player, gameState: GameState)(implicit players: Players): Option[Player] =
     gameState match {
       case Running =>
-        nextTurn(player, players)
-        gameLoop(nextPlayer(player, players), players, GameBoard.getGameState(players))
+        nextTurn(player)
+        gameLoop(nextPlayer(player), GameBoard.getGameState)
       case _: GameOver =>
-        GameBoard.getWinner(players)
+        GameBoard.getWinner
     }
 
-  def nextTurn(player: Player, players: Players) {
+  def nextTurn(player: Player)(implicit players: Players) {
     GUI.update(player)
-    GameBoard.update(player, players)
+    GameBoard.update(player)
   }
 
-  def nextPlayer(player: Player, players: Players) = player match {
+  def nextPlayer(player: Player)(implicit players: Players) = player match {
     case _: Player1 => players._2
     case _: Player2 => players._1
   }

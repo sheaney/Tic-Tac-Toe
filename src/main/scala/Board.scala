@@ -2,7 +2,7 @@ import annotation.switch
 
 class Board(private val repr: Array[Array[Int]] = Array.fill(3,3)(0)) extends Utilities {
 
-  def update(player: Player, players: Players) {
+  def update(player: Player)(implicit players: Players) {
     val (row, column) = player.getMove(players)
     player match {
       case _: Player1 => repr(row)(column) = 1
@@ -27,25 +27,25 @@ class Board(private val repr: Array[Array[Int]] = Array.fill(3,3)(0)) extends Ut
       if repr(row)(column) == 0
     } yield (row, column)
 
-  def fitness(players: Players): Int =
+  def fitness(implicit players: Players): Int =
     getWinner(players) match {
       case Some(_: Human) => -1
       case Some(_: Computer) => 1
       case _ => 0
     }
 
-  def getGameState(players: Players): GameState =
-    if (getWinner(players).isEmpty)
+  def getGameState(implicit players: Players): GameState =
+    if (getWinner.isEmpty)
       checkIfBoardIsFull
     else
       Winner
 
-  def getWinner(players: Players): Option[Player] =
-    getVerticalWinner(players)
-      .orElse(getHorizontalWinner(players))
-      .orElse(getDiagonalWinner(players))
+  def getWinner(implicit players: Players): Option[Player] =
+    getVerticalWinner
+      .orElse(getHorizontalWinner)
+      .orElse(getDiagonalWinner)
 
-  def getVerticalWinner(players: Players): Option[Player] = {
+  def getVerticalWinner(implicit players: Players): Option[Player] = {
     val indeces = Seq(0, 1, 2)
     def checkColumn(col: Int): Boolean = {
       val check = repr(indeces.head)(col)
@@ -59,29 +59,27 @@ class Board(private val repr: Array[Array[Int]] = Array.fill(3,3)(0)) extends Ut
         if (winner != 0) winner
         else if (checkColumn(col)) repr(col)(col)
         else 0
-      },
-      players
+      }
     )
   }
 
-  def getHorizontalWinner(players: Players): Option[Player] =
+  def getHorizontalWinner(implicit players: Players): Option[Player] =
     getWinner(
       repr.foldLeft(0) { (winner, row) =>
         if (winner != 0) winner
         else if (row.forall(_ == row.head)) row.head
         else 0
-      },
-      players
+      }
     )
 
-  def getDiagonalWinner(players: Players): Option[Player] = {
+  def getDiagonalWinner(implicit players: Players): Option[Player] = {
     val indeces = List(0, 1, 2)
     if (regularDiagonal(indeces))
-      getWinner(repr(indeces.head)(indeces.head), players)
+      getWinner(repr(indeces.head)(indeces.head))
     else if (reverseDiagonal(indeces))
-      getWinner(repr(1)(1), players)
+      getWinner(repr(1)(1))
     else
-      getWinner(0, players)
+      getWinner(0)
   }
 
   private def regularDiagonal(indeces: Seq[Int]): Boolean =
@@ -100,7 +98,7 @@ class Board(private val repr: Array[Array[Int]] = Array.fill(3,3)(0)) extends Ut
     if (isFull) Tied else Running
   }
 
-  private def getWinner(winner: Int, players: Players): Option[Player] =
+  private def getWinner(winner: Int)(implicit players: Players): Option[Player] =
     (winner: @switch) match {
       case 0 => None
       case 1 => Some(players._1)
