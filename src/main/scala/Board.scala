@@ -38,7 +38,7 @@ class Board(private val repr: Array[Array[Int]] = Array.fill(3,3)(0)) extends Ut
     if (getWinner(players).isEmpty)
       checkIfBoardIsFull
     else
-      Winner()
+      Winner
 
   def getWinner(players: Players): Option[Player] =
     getVerticalWinner(players)
@@ -97,7 +97,7 @@ class Board(private val repr: Array[Array[Int]] = Array.fill(3,3)(0)) extends Ut
       repr.foldLeft(true) { (isFull, row) =>
         isFull && row.forall(_ != 0)
       }
-    if (isFull) Tied() else Running()
+    if (isFull) Tied else Running
   }
 
   private def getWinner(winner: Int, players: Players): Option[Player] =

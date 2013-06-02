@@ -1,6 +1,6 @@
 trait MaxMin
-object Max extends MaxMin
-object Min extends MaxMin
+case object Max extends MaxMin
+case object Min extends MaxMin
 
 object AI extends Utilities {
   type FitnessMove = Tuple2[Int, Option[Move]]
@@ -9,7 +9,7 @@ object AI extends Utilities {
     if (!node.getWinner(players).isEmpty) true
     else
       node.checkIfBoardIsFull match {
-        case _: Running => false
+        case Running => false
         case _ => true
       }
 
@@ -28,7 +28,7 @@ object AI extends Utilities {
         (node.fitness(players), moveChoice)
       else
         p match {
-          case _: Max.type =>
+          case Max =>
             node.findPossibleMoves.
             takeWhile(_ => beta > alpha).
             foldLeft((alpha, moveChoice)) { case ((alpha, moveChoice), move) =>
@@ -37,7 +37,7 @@ object AI extends Utilities {
                 alphaBeta(simulatedBoard, alpha, beta, Option(move), not(player, players), Min))
             }
 
-          case _: Min.type =>
+          case Min =>
             node.findPossibleMoves.
             takeWhile(_ => beta > alpha).
             foldLeft((beta, moveChoice)) { case ((beta, _), move) =>
