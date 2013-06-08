@@ -41,9 +41,7 @@ class Board(private val repr: Array[Array[Int]] = Array.fill(3,3)(0)) extends Ut
       Winner
 
   def getWinner(implicit players: Players): Option[Player] =
-    getVerticalWinner
-      .orElse(getHorizontalWinner)
-      .orElse(getDiagonalWinner)
+    getVerticalWinner orElse getHorizontalWinner orElse getDiagonalWinner
 
   def getVerticalWinner(implicit players: Players): Option[Player] = {
     val indeces = Seq(0, 1, 2)
