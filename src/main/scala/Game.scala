@@ -7,9 +7,7 @@ case object Tied extends GameOver
 
 object Game extends Utilities {
 
-  def main(args: Array[String]) {
-    (initialize andThen run)(args)
-  }
+  def main(args: Array[String]) = (initialize andThen run)(args)
 
   lazy val initialize = (args: Array[String]) => {
       GUI.start
