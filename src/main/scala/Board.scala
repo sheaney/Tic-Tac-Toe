@@ -2,8 +2,8 @@ import annotation.switch
 
 class Board(private val repr: Array[Array[Int]] = Array.fill(3,3)(0)) extends Utilities {
 
-  def update(player: Player)(implicit players: Players) {
-    val (row, column) = player.getMove(players)
+  def update(player: Player, move: Move)(implicit players: Players) {
+    val (row, column) = move
     player match {
       case _: Player1 => repr(row)(column) = 1
       case _: Player2 => repr(row)(column) = 2
