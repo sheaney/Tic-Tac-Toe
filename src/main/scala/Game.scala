@@ -12,7 +12,7 @@ object Game extends Utilities {
   def main(args: Array[String]): Unit =
     (initialize andThen run)(args)
 
-  val initialize = (args: Array[String]) => {
+  val initialize = (args: Array[String]) =>
     args.map(_.trim.toLowerCase) match {
       case Array("x") =>
         (new Player1 with Human, new Player2 with Computer)
@@ -21,10 +21,10 @@ object Game extends Utilities {
       case _ =>
         (new Player1 with Human, new Player2 with Computer)
       }
-    }
 
   def run(players: Players): Unit = {
     val system = ActorSystem("TicTacToe")
+    sys.addShutdownHook(system.shutdown())
     system.actorOf(Props(classOf[GameActor], players), "GameActor")
   }
 

@@ -2,7 +2,7 @@ import annotation.switch
 
 class Board(private val repr: Array[Array[Int]] = Array.fill(3,3)(0)) extends Utilities {
 
-  def update(player: Player, move: Move)(implicit players: Players) {
+  def update(player: Player, move: Move): Unit = {
     val (row, column) = move
     player match {
       case _: Player1 => repr(row)(column) = 1
