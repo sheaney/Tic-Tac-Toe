@@ -6,12 +6,11 @@ object AI extends Utilities {
   type FitnessMove = Tuple2[Int, Option[Move]]
 
   def terminal(node: Board)(implicit players: Players) =
-    if (!node.getWinner.isEmpty) true
-    else
-      node.checkIfBoardIsFull match {
-        case Running => false
-        case _ => true
-      }
+    node.getWinner.nonEmpty ||
+    (node.checkIfBoardIsFull match {
+      case Running => false
+      case _ => true
+    })
 
   def not(p: Player)(implicit players: Players) = p match {
     case _: Player1 => players._2
